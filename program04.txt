@@ -1,0 +1,75 @@
+; Example assembly language program -- adds two numbers
+; Author:  R. Detmer
+; Date:    1/2008
+
+INCLUDE io.h            ; header file for input/output
+
+.DATA               ; reserve storage for data
+
+textList   BYTE    "1:10:500:20:4000", 0
+myTitle    BYTE    "Sum Message", 0
+resultLbl  BYTE    "The sum of the number list is "
+listSum    BYTE    11 DUP(?), 0
+tempNum    BYTE    11 DUP(?), 0
+
+numList    DWORD   10 DUP(?)
+
+.CODE
+MainProc  PROC
+          sub     rsp, 120        ; reserve stack space for MainProc
+          
+        lea      rax,   textList
+        lea       rdi,    tempNum
+        lea       rcx,    numList
+        mov      rsi,   rax
+        mov       ebx, 0
+
+loopStart:  
+        cmp BYTE PTR[rsi], 0
+        je theEND
+       
+        cmp BYTE PTR[rsi], ":"
+        je firstIf
+        mov      bl, BYTE PTR [rsi]
+        mov       BYTE PTR[rdi], bl
+        
+        add rsi, 1
+        add rdi, 1
+       
+        jmp loopStart
+
+
+firstIf:
+        inc rsi
+        atod      tempNum
+        mov [rcx], eax
+        add rcx, 4
+        inc ebx
+        lea       rdi,    tempNum
+        mov QWORD PTR [rdi], 0
+        jmp loopStart
+
+
+
+theEND:
+
+       atod      tempNum
+       mov [rcx], eax
+       
+SummingLoop:       
+       
+       
+       output resultLbl, listSum          
+
+
+
+       add     rsp, 120        ; restore stack
+       mov     rax, 0          ; value to return (0)
+       ret
+MainProc ENDP
+END
+
+
+MainProc ENDP
+END
+
